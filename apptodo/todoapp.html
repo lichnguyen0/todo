@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body.dark-mode .container {
+            background: #2a2a3e;
+            color: #e0e0e0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 32px;
+        }
+
+        body.dark-mode h1 {
+            color: #e0e0e0;
+        }
+
+        .theme-toggle {
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .progress-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        body.dark-mode .progress-section {
+            background: #1a1a2e;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 35px;
+            background: #e0e0e0;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        body.dark-mode .progress-bar {
+            background: #333;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        body.dark-mode .stat-item {
+            background: #16213e;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        body.dark-mode .stat-label {
+            color: #aaa;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: 1fr 150px 150px auto;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode input,
+        body.dark-mode select {
+            background: #16213e;
+            border-color: #333;
+            color: #e0e0e0;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-add {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-tab {
+            flex: 1;
+            padding: 12px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .filter-tab {
+            background: #16213e;
+            color: #e0e0e0;
+        }
+
+        .filter-tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .filter-tab:hover {
+            transform: translateY(-2px);
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding-left: 45px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #999;
+        }
+
+        .todo-list {
+            list-style: none;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .todo-item {
+            background: #f8f9fa;
+            padding: 18px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto auto;
+            gap: 15px;
+            align-items: center;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+
+        body.dark-mode .todo-item {
+            background: #1a1a2e;
+        }
+
+        .todo-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .todo-item.priority-high {
+            border-left-color: #f44336;
+        }
+
+        .todo-item.priority-medium {
+            border-left-color: #ff9800;
+        }
+
+        .todo-item.priority-low {
+            border-left-color: #4CAF50;
+        }
+
+        .todo-item.completed {
+            opacity: 0.6;
+            animation: completeAnimation 0.5s ease;
+        }
+
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        @keyframes completeAnimation {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); background: #d4edda; }
+        }
+
+        .todo-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .todo-content {
+            flex: 1;
+        }
+
+        .todo-text {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        body.dark-mode .todo-text {
+            color: #e0e0e0;
+        }
+
+        .todo-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        body.dark-mode .todo-meta {
+            color: #aaa;
+        }
+
+        .todo-category {
+            background: #667eea;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        .todo-deadline {
+            color: #f44336;
+            font-weight: 600;
+        }
+
+        .todo-deadline.safe {
+            color: #4CAF50;
+        }
+
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .star-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-edit {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+        }
+
+        .btn-save {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #999;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .firework {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        @keyframes fireworkExplode {
+            0% {
+                transform: translate(0, 0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx, 0px), var(--ty, 0px));
+                opacity: 0;
+            }
+        }
+
+        .firework-trail {
+            position: fixed;
+            width: 3px;
+            height: 30px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        @keyframes rocketLaunch {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-400px);
+                opacity: 0;
+            }
+        }
+
+        .celebration-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: bold;
+            color: #4CAF50;
+            animation: celebrationPop 1s ease-out forwards;
+            pointer-events: none;
+            z-index: 1000;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        @keyframes celebrationPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+        }
+
+        @keyframes flashExpand {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(15);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📝 Todo App Pro</h1>
+        <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+    </div>
+
+    <div class="progress-section">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill">0%</div>
+        </div>
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalTasks">0</div>
+                <div class="stat-label">Tổng số</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="completedTasks">0</div>
+                <div class="stat-label">Hoàn thành</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="pendingTasks">0</div>
+                <div class="stat-label">Đang làm</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="importantTasks">0</div>
+                <div class="stat-label">Quan trọng</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-section">
+        <input type="text" id="todoInput" placeholder="Thêm công việc mới...">
+        <select id="categorySelect">
+            <option value="Công việc">🏢 Công việc</option>
+            <option value="Học tập">📚 Học tập</option>
+            <option value="Cá nhân">👤 Cá nhân</option>
+            <option value="Mua sắm">🛒 Mua sắm</option>
+            <option value="Khác">📌 Khác</option>
+        </select>
+        <select id="prioritySelect">
+            <option value="low">Thấp</option>
+            <option value="medium">Trung bình</option>
+            <option value="high">Cao</option>
+        </select>
+        <button class="btn btn-add" onclick="addTodo()">➕ Thêm</button>
+    </div>
+
+    <div class="controls">
+        <input type="date" id="deadlineInput">
+    </div>
+
+    <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Tìm kiếm công việc..." oninput="filterTodos()">
+    </div>
+
+    <div class="filter-tabs">
+        <button class="filter-tab active" onclick="setFilter('all')">Tất cả</button>
+        <button class="filter-tab" onclick="setFilter('pending')">Đang làm</button>
+        <button class="filter-tab" onclick="setFilter('completed')">Hoàn thành</button>
+        <button class="filter-tab" onclick="setFilter('important')">Quan trọng</button>
+    </div>
+
+    <ul class="todo-list" id="todoList"></ul>
+</div>
+
+<script>
+    let todos = [];
+    let editingId = null;
+    let currentFilter = 'all';
+    let darkMode = false;
+
+    function loadTodos() {
+        const saved = localStorage.getItem('todos');
+        if (saved) {
+            todos = JSON.parse(saved);
+        }
+    }
+
+    function saveTodos() {
+        localStorage.setItem('todos', JSON.stringify(todos));
+    }
+
+    function addTodo() {
+        const input = document.getElementById('todoInput');
+        const category = document.getElementById('categorySelect').value;
+        const priority = document.getElementById('prioritySelect').value;
+        const deadline = document.getElementById('deadlineInput').value;
+        const text = input.value.trim();
+
+        if (text === '') {
+            alert('Vui lòng nhập công việc!');
+            return;
+        }
+
+        const todo = {
+            id: Date.now(),
+            text: text,
+            completed: false,
+            important: false,
+            category: category,
+            priority: priority,
+            deadline: deadline,
+            createdAt: new Date().toLocaleDateString('vi-VN')
+        };
+
+        todos.unshift(todo);
+        input.value = '';
+        document.getElementById('deadlineInput').value = '';
+        saveTodos();
+        render();
+    }
+
+    function toggleComplete(id) {
+        const todo = todos.find(t => t.id === id);
+        const wasCompleted = todo.completed;
+
+        todos = todos.map(t => {
+            if (t.id === id) {
+                t.completed = !t.completed;
+            }
+            return t;
+        });
+
+        if (!wasCompleted && todo.completed) {
+            launchFireworks();
+            showCelebration();
+        }
+
+        saveTodos();
+        render();
+    }
+
+    function toggleImportant(id) {
+        todos = todos.map(todo => {
+            if (todo.id === id) {
+                todo.important = !todo.important;
+            }
+            return todo;
+        });
+        saveTodos();
+        render();
+    }
+
+    function deleteTodo(id) {
+        if (confirm('Bạn có chắc muốn xóa công việc này?')) {
+            todos = todos.filter(todo => todo.id !== id);
+            saveTodos();
+            render();
+        }
+    }
+
+    function startEdit(id) {
+        editingId = id;
+        render();
+    }
+
+    function saveEdit(id) {
+        const input = document.querySelector('#edit-input-' + id);
+        const newText = input.value.trim();
+
+        if (newText === '') {
+            alert('Công việc không được để trống!');
+            return;
+        }
+
+        todos = todos.map(todo => {
+            if (todo.id === id) {
+                todo.text = newText;
+            }
+            return todo;
+        });
+
+        editingId = null;
+        saveTodos();
+        render();
+    }
+
+    function cancelEdit() {
+        editingId = null;
+        render();
+    }
+
+    function setFilter(filter) {
+        currentFilter = filter;
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        render();
+    }
+
+    function filterTodos() {
+        render();
+    }
+
+    function toggleTheme() {
+        darkMode = !darkMode;
+        document.body.classList.toggle('dark-mode');
+        document.querySelector('.theme-toggle').textContent = darkMode ? '☀️' : '🌙';
+        localStorage.setItem('darkMode', darkMode);
+    }
+
+    function getDaysUntilDeadline(deadline) {
+        if (!deadline) return null;
+        const today = new Date();
+        const deadlineDate = new Date(deadline);
+        const diffTime = deadlineDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+    }
+
+    function getFilteredTodos() {
+        const searchText = document.getElementById('searchInput').value.toLowerCase();
+
+        let filtered = todos.filter(todo => {
+            const matchesSearch = todo.text.toLowerCase().includes(searchText);
+
+            if (currentFilter === 'all') return matchesSearch;
+            if (currentFilter === 'pending') return !todo.completed && matchesSearch;
+            if (currentFilter === 'completed') return todo.completed && matchesSearch;
+            if (currentFilter === 'important') return todo.important && matchesSearch;
+
+            return matchesSearch;
+        });
+
+        filtered.sort((a, b) => {
+            if (a.important !== b.important) return b.important - a.important;
+            if (a.completed !== b.completed) return a.completed - b.completed;
+            return 0;
+        });
+
+        return filtered;
+    }
+
+    function updateProgress() {
+        const total = todos.length;
+        const completed = todos.filter(t => t.completed).length;
+        const pending = total - completed;
+        const important = todos.filter(t => t.important).length;
+        const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+        document.getElementById('totalTasks').textContent = total;
+        document.getElementById('completedTasks').textContent = completed;
+        document.getElementById('pendingTasks').textContent = pending;
+        document.getElementById('importantTasks').textContent = important;
+
+        const progressFill = document.getElementById('progressFill');
+        progressFill.style.width = percentage + '%';
+        progressFill.textContent = percentage + '%';
+    }
+
+    function render() {
+        const todoList = document.getElementById('todoList');
+        const filteredTodos = getFilteredTodos();
+        todoList.innerHTML = '';
+
+        if (filteredTodos.length === 0) {
+            todoList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div style="font-size: 20px; margin-bottom: 10px;">Không có công việc nào</div><div style="font-size: 14px;">Hãy thêm công việc mới hoặc thử tìm kiếm khác!</div></div>';
+        } else {
+            filteredTodos.forEach(todo => {
+                const li = document.createElement('li');
+                li.className = 'todo-item priority-' + todo.priority + (todo.completed ? ' completed' : '');
+
+                if (editingId === todo.id) {
+                    li.innerHTML = '<input type="checkbox" class="todo-checkbox" ' + (todo.completed ? 'checked' : '') + ' disabled><input type="text" class="todo-input" id="edit-input-' + todo.id + '" value="' + todo.text + '" style="grid-column: 2 / 5;"><button class="btn-small btn-save" onclick="saveEdit(' + todo.id + ')">💾</button><button class="btn-small btn-cancel" onclick="cancelEdit()">✖️</button>';
+                } else {
+                    const daysUntil = getDaysUntilDeadline(todo.deadline);
+                    let deadlineText = '';
+                    let deadlineClass = 'safe';
+
+                    if (daysUntil !== null) {
+                        if (daysUntil < 0) {
+                            deadlineText = '⏰ Quá hạn ' + Math.abs(daysUntil) + ' ngày';
+                            deadlineClass = '';
+                        } else if (daysUntil === 0) {
+                            deadlineText = '⏰ Hôm nay';
+                            deadlineClass = '';
+                        } else if (daysUntil <= 3) {
+                            deadlineText = '⏰ Còn ' + daysUntil + ' ngày';
+                            deadlineClass = '';
+                        } else {
+                            deadlineText = '📅 ' + new Date(todo.deadline).toLocaleDateString('vi-VN');
+                        }
+                    }
+
+                    li.innerHTML = '<input type="checkbox" class="todo-checkbox" ' + (todo.completed ? 'checked' : '') + ' onchange="toggleComplete(' + todo.id + ')"><div class="todo-content"><div class="todo-text">' + todo.text + '</div><div class="todo-meta"><span class="todo-category">' + todo.category + '</span>' + (deadlineText ? '<span class="todo-deadline ' + deadlineClass + '">' + deadlineText + '</span>' : '') + '</div></div><button class="star-btn" onclick="toggleImportant(' + todo.id + ')">' + (todo.important ? '⭐' : '☆') + '</button><button class="btn-small btn-edit" onclick="startEdit(' + todo.id + ')">✏️</button><button class="btn-small btn-delete" onclick="deleteTodo(' + todo.id + ')">🗑️</button>';
+                }
+
+                todoList.appendChild(li);
+            });
+        }
+
+        updateProgress();
+    }
+
+    function launchFireworks() {
+        const fireworkCount = Math.floor(Math.random() * 3) + 3;
+
+        for (let i = 0; i < fireworkCount; i++) {
+            setTimeout(() => {
+                launchFirework();
+            }, i * 300);
+        }
+    }
+
+    function launchFirework() {
+        const startX = Math.random() * window.innerWidth;
+        const startY = window.innerHeight;
+        const endY = Math.random() * 200 + 100;
+
+        const trail = document.createElement('div');
+        trail.className = 'firework-trail';
+        trail.style.left = startX + 'px';
+        trail.style.top = startY + 'px';
+        trail.style.background = 'linear-gradient(to top, gold, orange)';
+        trail.style.animation = 'rocketLaunch 0.8s ease-out forwards';
+        document.body.appendChild(trail);
+
+        setTimeout(() => {
+            trail.remove();
+            createFireworkExplosion(startX, endY);
+        }, 800);
+    }
+
+    function createFireworkExplosion(x, y) {
+        const colors = ['#ff0844', '#ffb700', '#00d9ff', '#7fff00', '#ff10f0', '#fff700'];
+        const particleCount = 40;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'firework';
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            particle.style.background = color;
+
+            const angle = (Math.PI * 2 * i) / particleCount;
+            const velocity = Math.random() * 100 + 100;
+            const tx = Math.cos(angle) * velocity;
+            const ty = Math.sin(angle) * velocity;
+
+            particle.style.setProperty('--tx', tx + 'px');
+            particle.style.setProperty('--ty', ty + 'px');
+            particle.style.animation = 'fireworkExplode 1s ease-out forwards';
+
+            document.body.appendChild(particle);
+
+            setTimeout(() => particle.remove(), 1000);
+        }
+
+        createFlash(x, y);
+    }
+
+    function createFlash(x, y) {
+        const flash = document.createElement('div');
+        flash.style.position = 'fixed';
+        flash.style.left = x + 'px';
+        flash.style.top = y + 'px';
+        flash.style.width = '20px';
+        flash.style.height = '20px';
+        flash.style.borderRadius = '50%';
+        flash.style.background = 'radial-gradient(circle, white, transparent)';
+        flash.style.transform = 'translate(-50%, -50%) scale(0)';
+        flash.style.animation = 'flashExpand 0.5s ease-out forwards';
+        flash.style.pointerEvents = 'none';
+        flash.style.zIndex = '9997';
+        document.body.appendChild(flash);
+
+        setTimeout(() => flash.remove(), 500);
+    }
+
+    function showCelebration() {
+        const messages = ['🎉 Tuyệt vời!', '✨ Hoàn thành!', '🌟 Xuất sắc!', '👏 Làm tốt lắm!'];
+        const message = messages[Math.floor(Math.random() * messages.length)];
+
+        const celebration = document.createElement('div');
+        celebration.className = 'celebration-text';
+        celebration.textContent = message;
+        document.body.appendChild(celebration);
+
+        setTimeout(() => celebration.remove(), 1000);
+    }
+
+    document.getElementById('todoInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addTodo();
+        }
+    });
+
+    window.onload = function() {
+        loadTodos();
+
+        const savedDarkMode = localStorage.getItem('darkMode');
+        if (savedDarkMode === 'true') {
+            darkMode = true;
+            document.body.classList.add('dark-mode');
+            document.querySelector('.theme-toggle').textContent = '☀️';
+        }
+
+        render();
+    };
+</script>
+</body>
+</html>
